@@ -29,13 +29,17 @@ func (f *File) Run(rootPath string, data Data) error {
 		return err
 	}
 
-	dir := filepath.Dir(path)
-	err = os.MkdirAll(filepath.Join(rootPath, dir), f.Permission)
+	body, err := f.render(f.Template, data)
 	if err != nil {
 		return err
 	}
 
-	body, err := f.render(f.Template, data)
+	return f.save(rootPath, path, body)
+}
+
+func (f *File) save(rootPath, path, body string) error {
+	dir := filepath.Dir(path)
+	err := os.MkdirAll(filepath.Join(rootPath, dir), f.Permission)
 	if err != nil {
 		return err
 	}
@@ -47,6 +51,7 @@ func (f *File) Run(rootPath string, data Data) error {
 	if err != nil {
 		return err
 	}
+
 	_, err = ff.WriteString(body)
 	if err != nil {
 		return errors.WithStack(err)
