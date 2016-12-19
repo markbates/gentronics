@@ -16,6 +16,7 @@ type Runnable interface {
 
 type Generator struct {
 	Runners []Runnable
+	Should  ShouldFunc
 }
 
 func New() *Generator {
@@ -29,6 +30,12 @@ func (g *Generator) Add(r Runnable) {
 }
 
 func (g *Generator) Run(rootPath string, data Data) error {
+	if g.Should != nil {
+		b := g.Should(data)
+		if !b {
+			return nil
+		}
+	}
 	err := os.MkdirAll(rootPath, 0755)
 	if err != nil {
 		return errors.WithStack(err)
