@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -13,10 +14,11 @@ import (
 type ShouldFunc func(Data) bool
 
 type File struct {
-	Path       string
-	Template   string
-	Permission os.FileMode
-	Should     ShouldFunc
+	Path          string
+	Template      string
+	TemplateFuncs template.FuncMap
+	Permission    os.FileMode
+	Should        ShouldFunc
 }
 
 func (f *File) Run(rootPath string, data Data) error {
@@ -64,15 +66,20 @@ func (f *File) render(s string, data Data) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	t.Funcs(f.TemplateFuncs)
 	bb := bytes.Buffer{}
 	err = t.Execute(&bb, data)
 	return bb.String(), err
 }
 
-func NewFile(path string, template string) *File {
+func NewFile(path string, t string) *File {
 	return &File{
-		Path:       path,
-		Template:   template,
+		Path:     path,
+		Template: t,
+		TemplateFuncs: template.FuncMap{
+			"upcase":   strings.ToUpper,
+			"downcase": strings.ToLower,
+		},
 		Permission: 0755,
 		Should: func(data Data) bool {
 			return true
