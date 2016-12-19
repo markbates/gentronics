@@ -62,11 +62,11 @@ func (f *File) save(rootPath, path, body string) error {
 }
 
 func (f *File) render(s string, data Data) (string, error) {
-	t, err := template.New("").Parse(s)
+	t := template.New("").Funcs(f.TemplateFuncs)
+	t, err := t.Parse(s)
 	if err != nil {
 		return "", err
 	}
-	t = t.Funcs(f.TemplateFuncs)
 	bb := bytes.Buffer{}
 	err = t.Execute(&bb, data)
 	return bb.String(), err
