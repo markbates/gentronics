@@ -66,7 +66,7 @@ func (f *File) render(s string, data Data) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	t.Funcs(f.TemplateFuncs)
+	t = t.Funcs(f.TemplateFuncs)
 	bb := bytes.Buffer{}
 	err = t.Execute(&bb, data)
 	return bb.String(), err
