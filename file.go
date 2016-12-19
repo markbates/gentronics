@@ -1,13 +1,13 @@
 package gentronics
 
 import (
-	"bytes"
 	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"github.com/aymerick/raymond"
+	"github.com/markbates/buffalo/render/helpers"
 	"github.com/pkg/errors"
 )
 
@@ -41,7 +41,7 @@ func (f *File) Run(rootPath string, data Data) error {
 
 func (f *File) save(rootPath, path, body string) error {
 	dir := filepath.Dir(path)
-	err := os.MkdirAll(filepath.Join(rootPath, dir), f.Permission)
+	err := os.MkdirAll(filepath.Join(rootPath, dir), 0755)
 	if err != nil {
 		return err
 	}
@@ -62,25 +62,20 @@ func (f *File) save(rootPath, path, body string) error {
 }
 
 func (f *File) render(s string, data Data) (string, error) {
-	t := template.New("").Funcs(f.TemplateFuncs)
-	t, err := t.Parse(s)
+	t, err := raymond.Parse(s)
 	if err != nil {
 		return "", err
 	}
-	bb := bytes.Buffer{}
-	err = t.Execute(&bb, data)
-	return bb.String(), err
+	t.RegisterHelpers(f.TemplateFuncs)
+	return t.Exec(data)
 }
 
 func NewFile(path string, t string) *File {
 	return &File{
-		Path:     path,
-		Template: t,
-		TemplateFuncs: template.FuncMap{
-			"upcase":   strings.ToUpper,
-			"downcase": strings.ToLower,
-		},
-		Permission: 0755,
+		Path:          path,
+		Template:      t,
+		TemplateFuncs: helpers.Helpers,
+		Permission:    0664,
 		Should: func(data Data) bool {
 			return true
 		},
