@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/aymerick/raymond"
-	"github.com/markbates/buffalo/render/helpers"
+	"github.com/gobuffalo/buffalo/render/helpers"
 	"github.com/pkg/errors"
 )
 
