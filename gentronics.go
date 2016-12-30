@@ -3,15 +3,10 @@ package gentronics
 import (
 	"os"
 
-	"github.com/gobuffalo/velvet"
 	"github.com/pkg/errors"
 )
 
 type Data map[string]interface{}
-
-func (d Data) ToVelvet() *velvet.Context {
-	return velvet.NewContextWith(d)
-}
 
 type RunFn func(string, Data) error
 

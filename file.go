@@ -6,7 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gobuffalo/velvet"
+	"github.com/aymerick/raymond"
+	"github.com/gobuffalo/buffalo/render/helpers"
 	"github.com/pkg/errors"
 )
 
@@ -61,19 +62,19 @@ func (f *File) save(rootPath, path, body string) error {
 }
 
 func (f *File) render(s string, data Data) (string, error) {
-	t, err := velvet.Parse(s)
+	t, err := raymond.Parse(s)
 	if err != nil {
 		return "", err
 	}
-	t.Helpers.AddMany(f.TemplateFuncs)
-	return t.Exec(data.ToVelvet())
+	t.RegisterHelpers(f.TemplateFuncs)
+	return t.Exec(data)
 }
 
 func NewFile(path string, t string) *File {
 	return &File{
 		Path:          path,
 		Template:      t,
-		TemplateFuncs: map[string]interface{}{},
+		TemplateFuncs: helpers.Helpers,
 		Permission:    0664,
 		Should: func(data Data) bool {
 			return true
