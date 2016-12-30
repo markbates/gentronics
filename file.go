@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/aymerick/raymond"
-	"github.com/gobuffalo/buffalo/render/helpers"
 	"github.com/pkg/errors"
 )
 
@@ -74,7 +73,7 @@ func NewFile(path string, t string) *File {
 	return &File{
 		Path:          path,
 		Template:      t,
-		TemplateFuncs: helpers.Helpers,
+		TemplateFuncs: Helpers,
 		Permission:    0664,
 		Should: func(data Data) bool {
 			return true
