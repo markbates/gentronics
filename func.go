@@ -6,7 +6,7 @@ type Func struct {
 }
 
 func (f *Func) Run(rootPath string, data Data) error {
-	if !f.Should(data) {
+	if f.Should != nil && !f.Should(data) {
 		return nil
 	}
 	return f.Runner(rootPath, data)
